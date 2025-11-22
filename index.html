@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Veronica VAI Data Analytics Dashboard</title>
+  <!-- Plotly (latest) -->
+  <script src="https://cdn.plot.ly/plotly-2.26.1.min.js"></script>
+  <style>
+    :root{
+      --bg:#0f1724; /* deep navy */
+      --card:#0b1220;
+      --muted:#9aa4b2;
+      --accent:#ffb000;
+      --glass: rgba(255,255,255,0.03);
+    }
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial; background: linear-gradient(180deg,#071021 0%, #07162a 60%); color:#e6eef6}
+    .app{
+      max-width:1200px;margin:24px auto;padding:22px;backdrop-filter: blur(6px);
+    }
+    .header{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;border-radius:14px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 6px 30px rgba(2,6,23,0.6);
+    }
+    .branding{
+      display:flex;align-items:center;gap:14px
+    }
+    .logos{display:flex;gap:12px;align-items:center}
+    .logos img{height:70px;width:auto;object-fit:contain;border-radius:8px;border:1px solid rgba(255,255,255,0.06)}
+    .title{font-size:20px;font-weight:700}
+    .subtitle{color:var(--muted);font-size:13px}
+    .grid{
+      margin-top:18px;display:grid;grid-template-columns:repeat(12, 1fr);grid-auto-rows:220px;gap:16px
+    }
+    .card{background:var(--card);grid-column:span 6;border-radius:12px;padding:12px;box-shadow:0 6px 18px rgba(2,6,23,0.5);display:flex;flex-direction:column}
+    .card.full{grid-column:span 12}
+    .card h3{margin:6px 0 10px 0;font-size:15px}
+    .meta{font-size:12px;color:var(--muted);margin-bottom:6px}
+    /* responsive */
+    @media (max-width:1000px){.grid{grid-template-columns:repeat(6,1fr)}.card{grid-column:span 6}} 
+    @media (max-width:640px){.grid{grid-template-columns:repeat(2,1fr)}.logos img{height:40px;width:40px}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="branding">
+        <div class="logos">
+          <!-- image uploaded by user (local path provided). -->
+          <img src="logo.png" alt="Logo 1" />
+          <img src="logo2.png" alt="Logo 2" />
+        </div>
+        <div>
+          <div class="title">VAI Data Analytics Dashboard</div>
+          <div class="subtitle">Interactive visual overview</div>
+        </div>
+      </div>
+
+      <!-- Controls removed intentionally -->
+    </header>
+
+    <section class="grid">
+      <div class="card" id="card1">
+        <div class="meta">Top FAQ Candidates (last 7 days)</div>
+        <h3>Top FAQs</h3>
+        <div id="faqChart" style="flex:1"></div>
+      </div>
+
+      <div class="card" id="card2">
+        <div class="meta">Messages per Session Distribution</div>
+        <h3>Messages per Session</h3>
+        <div id="histChart" style="flex:1"></div>
+      </div>
+
+      <div class="card full" id="card3">
+        <div class="meta">Daily Unique Sessions (7 days)</div>
+        <h3>Daily Sessions</h3>
+        <div id="lineChart" style="height:320px"></div>
+      </div>
+
+      <div class="card" id="card4">
+        <div class="meta">Satisfaction Breakdown (last 7 days)</div>
+        <h3>Satisfaction</h3>
+        <div id="pieChart" style="flex:1"></div>
+      </div>
+
+      <!-- NEW: Website Traffic card placed to the right of the pie chart (uses months starting Nov 2025) -->
+      <div class="card" id="cardTraffic">
+        <div class="meta">Website Traffic</div>
+        <h3>Number of users visiting the website (monthly)</h3>
+        <div id="trafficChart" style="flex:1"></div>
+      </div>
+
+    </section>
+
+    <footer style="margin-top:14px;color:var(--muted);font-size:12px">© 2025 CogniAI Studios | Abraham Industries. All rights reserved.</footer>
+  </div>
+
+  <script>
+    // Default sample data — KEEP this
+    const sampleData = {
+      top_faq:[
+        {label:'is there a hostel?',count:102},
+        {label:'tell me about campus',count:95},
+        {label:'hi how do i apply?',count:88},
+        {label:'thank you',count:75},
+        {label:'what courses do you offer?',count:80},
+        {label:'how to apply online?',count:30},
+        {label:'when do pu admissions start?',count:22},
+        {label:'what are the sports facilities?',count:20}
+      ],
+      msg_hist:{bins:[2,4,6,8,10],counts:[62,81,48,39,9]},
+      daily:[
+        {date:'2025-11-13',count:33},
+        {date:'2025-11-14',count:39},
+        {date:'2025-11-15',count:28},
+        {date:'2025-11-16',count:37},
+        {date:'2025-11-17',count:42},
+        {date:'2025-11-18',count:29},
+        {date:'2025-11-19',count:31}
+      ],
+      satisfaction:{positive:80,neutral:8,negative:12}
+    };
+
+    // Website traffic monthly data (starting Nov 2025 — using the counts from the metrics image provided)
+    // These numbers reflect the "clicks/mo" style metric shown in the second image. Kept as-is per request.
+    const monthlyTraffic = {
+      months:['Nov 2025','Dec 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026'],
+      users:[6800, 7200, 6900, 7100, 7000, 7050]
+    };
+
+    // Renderers using Plotly
+    function renderFAQ(data){
+      const labels = data.map(d=>d.label);
+      const values = data.map(d=>d.count);
+      const trace = {
+        x:values.reverse(),
+        y:labels.reverse(),
+        type:'bar',
+        orientation:'h',
+        marker:{color:'#ffb000'},
+        hoverinfo:'x+y'
+      };
+      const layout = {margin:{l:180,r:30,t:10,b:30},paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',font:{color:'#dfeaf6'}};
+      Plotly.react('faqChart',[trace],layout,{displayModeBar:false});
+    }
+
+    function renderHist(hist){
+      // bins and counts
+      const x = hist.bins.map(b=>String(b));
+      const trace = {
+        x: x,
+        y: hist.counts,
+        type:'bar',
+        marker:{color:'#ffb000'},
+        hoverinfo:'x+y'
+      };
+      const layout = {margin:{l:50,r:20,t:10,b:50},xaxis:{title:'Messages per session'},yaxis:{title:'Number of sessions'},paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',font:{color:'#dfeaf6'}};
+      Plotly.react('histChart',[trace],layout,{displayModeBar:false});
+    }
+
+    function renderLine(daily){
+      const x = daily.map(d=>d.date);
+      const y = daily.map(d=>d.count);
+      const trace = {x,y,mode:'lines+markers',line:{shape:'spline',width:3,color:'#ffb000'},marker:{size:8}};
+      const layout = {margin:{l:60,r:20,t:20,b:50},xaxis:{title:'Date'},yaxis:{title:'Unique sessions (users)'},paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',font:{color:'#dfeaf6'}};
+      Plotly.react('lineChart',[trace],layout,{displayModeBar:false});
+    }
+
+    function renderPie(sat){
+      const labels=['Positive (>=4)','Neutral (3)','Negative (<=2)'];
+      const values=[sat.positive||0,sat.neutral||0,sat.negative||0];
+      const trace = {labels,values,type:'pie',textinfo:'percent+label',insidetextorientation:'radial',marker:{colors:['#ffb000','#ff7a00','#ff3b6b']}}; 
+      const layout = {margin:{l:20,r:20,t:20,b:20},paper_bgcolor:'rgba(0,0,0,0)',font:{color:'#dfeaf6'}};
+      Plotly.react('pieChart',[trace],layout,{displayModeBar:false});
+    }
+
+    // NEW: renderer for monthly traffic chart
+    function renderTraffic(monthly){
+  // find index for November 2025 (falls back to 0 if not found)
+      const highlightIndex = monthly.months.findIndex(m => /Nov\s*2025/i.test(m));
+      const idx = highlightIndex === -1 ? 0 : highlightIndex;
+
+      // full (muted) line across all months
+      const fullTrace = {
+        x: monthly.months,
+        y: monthly.users,
+        mode: 'lines+markers',
+        type: 'scatter',
+        name: 'All months',
+        line: { shape: 'spline', width: 2, color: 'rgba(0,153,255,0.18)' }, // faint/backdrop line
+        marker: { size: 6, opacity: 0.5 }
+      };
+
+      // highlighted segment from first month up to November (keeps earlier months visible)
+      const leadY = monthly.users.map((v,i) => i <= idx ? v : null); // values only up to Nov index
+      const leadTrace = {
+        x: monthly.months,
+        y: leadY,
+        mode: 'lines',
+        type: 'scatter',
+        name: 'Draw to Nov',
+        line: { shape: 'spline', width: 3.5, color: '#0099ff' }, // highlighted 'drawn' line
+        hoverinfo: 'skip'
+      };
+
+      // big marker to emphasize November
+      const markerTrace = {
+        x: [monthly.months[idx]],
+        y: [monthly.users[idx]],
+        mode: 'markers+text',
+        type: 'scatter',
+        name: 'November 2025',
+        marker: { size: 12, color: '#ffb000', line: {width:2, color:'#ffffff'} },
+        text: [`${monthly.users[idx]} users`],
+        textposition: 'top center'
+      };
+
+      const layout = {
+        margin:{l:60,r:20,t:20,b:50},
+        xaxis:{title:'Month'},
+        yaxis:{title:'Users '},
+        paper_bgcolor:'rgba(0,0,0,0)',
+        plot_bgcolor:'rgba(0,0,0,0)',
+        font:{color:'#dfeaf6'},
+        legend: {orientation:'h', y:-0.15}
+      };
+
+      Plotly.react('trafficChart',[fullTrace, leadTrace, markerTrace],layout,{displayModeBar:false});
+    }
+
+    // Main update function — KEEP this
+    function updateDashboard(payload){
+      try{
+        const data = (typeof payload === 'string')? JSON.parse(payload) : payload;
+        if(data.top_faq) renderFAQ(data.top_faq.slice().reverse()); else renderFAQ(sampleData.top_faq.slice().reverse());
+        if(data.msg_hist) renderHist(data.msg_hist); else renderHist(sampleData.msg_hist);
+        if(data.daily) renderLine(data.daily); else renderLine(sampleData.daily);
+        if(data.satisfaction) renderPie(data.satisfaction); else renderPie(sampleData.satisfaction);
+
+        // traffic: if payload contains monthlyTraffic, use it, otherwise use the built-in monthlyTraffic above
+        if(data && data.monthlyTraffic) renderTraffic(data.monthlyTraffic); else renderTraffic(monthlyTraffic);
+      }catch(e){
+        console.error('Failed to update dashboard',e);
+      }
+    }
+
+    // initialize with sample data so charts are visible without controls
+    updateDashboard(sampleData);
+
+    // expose a function for the console if you want to feed JSON manually:
+    // example: updateDashboard(yourJsonObject)
+    window.updateDashboard = updateDashboard;
+  </script>
+</body>
+</html>
