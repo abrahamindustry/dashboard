@@ -217,7 +217,7 @@
     // NEW: renderer for monthly traffic chart
     function renderTraffic(monthly){
   // find index for November 2025 (falls back to 0 if not found)
-      const highlightIndex = monthly.months.findIndex(m => /Nov\s*2025/i.test(m));
+      const highlightIndex = monthly.months.findIndex(m => /Dec\s*2025/i.test(m));
       const idx = highlightIndex === -1 ? 0 : highlightIndex;
 
       // full (muted) line across all months
@@ -238,7 +238,7 @@
         y: leadY,
         mode: 'lines',
         type: 'scatter',
-        name: 'Draw to Nov',
+        name: 'Draw to Dec',
         line: { shape: 'spline', width: 3.5, color: '#0099ff' }, // highlighted 'drawn' line
         hoverinfo: 'skip'
       };
@@ -249,7 +249,7 @@
         y: [monthly.users[idx]],
         mode: 'markers+text',
         type: 'scatter',
-        name: 'November 2025',
+        name: 'December 2025',
         marker: { size: 12, color: '#ffb000', line: {width:2, color:'#ffffff'} },
         text: [`${monthly.users[idx]} users`],
         textposition: 'top center'
@@ -293,6 +293,7 @@
   </script>
 </body>
 </html>
+
 
 
 
