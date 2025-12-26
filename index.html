@@ -98,34 +98,74 @@
   <script>
     // Default sample data — KEEP this
     const sampleData = {
-      top_faq:[
-        {label:'is there a hostel?',count:5},
-        {label:'tell me about campus',count:20},
-        {label:'Is any entrance/admission test needed for IBDP admission?',count:40},
-        {label:'When are the admissions for 2026–27 open?',count:15},
-        {label:'For the admission test held by Christ College, how much score is needed to get admitted?',count:15},
-        {label:'Do we need a provisional certificate from PU board to join?',count:30},
-        {label:'when do pu admissions start?',count:14},
-        {label:'What is the admission procedure for a student relocating from Dubai (11th to 12th)?',count:3}
+     top_faq:[
+        {
+          label:'How is the college actually performing right now (academics, placements, reputation)?',
+          count:10
+        },
+        {
+          label:'Is the college good compared to other colleges in Bangalore right now?',
+          count:4
+        },
+        {
+          label:'What is the real placement percentage for this year?',
+          count:50
+        },
+        {
+          label:'Are students satisfied with faculty and teaching quality?',
+          count:2
+        },
+        {
+          label:'How strict is attendance and internal assessment in reality?',
+          count:17
+        },
+        {
+          label:'Is hostel and boarding available, and what are the rules?',
+          count:20
+        },
+        {
+          label:'Can a student study 1st PUC in another state and join Christ College for 2nd PUC?',
+          count:14
+        }
       ],
-      msg_hist:{bins:[2,4,6,8,10],counts:[23,25,45,20,15]},
+      msg_hist:{bins:[2,4,6,8,10],counts:[12,35,30,10,5]},
       daily:[
-        {date:'2025-11-25',count:33},
-        {date:'2025-11-26',count:39},
-        {date:'2025-11-27',count:28},
-        {date:'2025-11-28',count:37},
-        {date:'2025-11-29',count:42},
-        {date:'2025-11-30',count:29},
-        {date:'2025-12-01',count:31}
+        { date:'2025-12-01', count:28 },
+        { date:'2025-12-02', count:12 },
+        { date:'2025-12-03', count:34 },
+        { date:'2025-12-04', count:2 },
+        { date:'2025-12-05', count:104 },
+        { date:'2025-12-06', count:78 },
+        { date:'2025-12-07', count:46 },
+        { date:'2025-12-08', count:52 },
+        { date:'2025-12-09', count:54 },
+        { date:'2025-12-10', count:74 },
+        { date:'2025-12-11', count:56 },
+        { date:'2025-12-12', count:30 },
+        { date:'2025-12-13', count:24 },
+        { date:'2025-12-14', count:32 },
+        { date:'2025-12-15', count:22 },
+        { date:'2025-12-16', count:14 },
+        { date:'2025-12-17', count:6 },
+        { date:'2025-12-18', count:8 },
+        { date:'2025-12-19', count:32 },
+        { date:'2025-12-20', count:12 },
+        { date:'2025-12-21', count:34 },
+        { date:'2025-12-22', count:4 },
+        { date:'2025-12-23', count:16 },
+        { date:'2025-12-24', count:6 },
+        { date:'2025-12-25', count:4 },
+        { date:'2025-12-26', count:4 }
       ],
-      satisfaction:{positive:55,neutral:35,negative:10}
+
+      satisfaction:{positive:80,neutral:12,negative:8}
     };
 
     // Website traffic monthly data (starting Nov 2025 — using the counts from the metrics image provided)
     // These numbers reflect the "clicks/mo" style metric shown in the second image. Kept as-is per request.
     const monthlyTraffic = {
       months:['Nov 2025','Dec 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026'],
-      users:[30000, 7200, 6900, 7100, 7000, 7050]
+      users:[30000, 10000, 6900, 7100, 7000, 7050]
     };
 
     // Renderers using Plotly
@@ -253,5 +293,6 @@
   </script>
 </body>
 </html>
+
 
 
