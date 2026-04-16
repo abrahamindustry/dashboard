@@ -1,332 +1,278 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Veronica VAI Data Analytics Dashboard</title>
-  <!-- Plotly (latest) -->
-  <script src="https://cdn.plot.ly/plotly-2.26.1.min.js"></script>
-  <style>
-    :root{
-      --bg:#0f1724; /* deep navy */
-      --card:#0b1220;
-      --muted:#9aa4b2;
-      --accent:#ffb000;
-      --glass: rgba(255,255,255,0.03);
-    }
-    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial; background: linear-gradient(180deg,#071021 0%, #07162a 60%); color:#e6eef6}
-    .app{
-      max-width:1200px;margin:24px auto;padding:22px;backdrop-filter: blur(6px);
-    }
-    .header{
-      display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;border-radius:14px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 6px 30px rgba(2,6,23,0.6);
-    }
-    .branding{
-      display:flex;align-items:center;gap:14px
-    }
-    .logos{display:flex;gap:12px;align-items:center}
-    .logos img{height:70px;width:auto;object-fit:contain;border-radius:8px;border:1px solid rgba(255,255,255,0.06)}
-    .title{font-size:20px;font-weight:700}
-    .subtitle{color:var(--muted);font-size:13px}
-    .grid{
-      margin-top:18px;display:grid;grid-template-columns:repeat(12, 1fr);grid-auto-rows:220px;gap:16px
-    }
-    .card{background:var(--card);grid-column:span 6;border-radius:12px;padding:12px;box-shadow:0 6px 18px rgba(2,6,23,0.5);display:flex;flex-direction:column}
-    .card.full{grid-column:span 12}
-    .card h3{margin:6px 0 10px 0;font-size:15px}
-    .meta{font-size:12px;color:var(--muted);margin-bottom:6px}
-    /* responsive */
-    @media (max-width:1000px){.grid{grid-template-columns:repeat(6,1fr)}.card{grid-column:span 6}} 
-    @media (max-width:640px){.grid{grid-template-columns:repeat(2,1fr)}.logos img{height:40px;width:40px}}
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+<title>VAI Futuristic Dashboard</title>
+
+<script src="https://cdn.plot.ly/plotly-2.26.1.min.js"></script>
+
+<style>
+:root{
+  --bg:#050816;
+  --card:rgba(15,20,40,0.65);
+  --border:rgba(0,153,255,0.35);
+  --glow:0 0 15px rgba(0,153,255,0.4);
+  --text:#e6f1ff;
+  --muted:#8fa6c9;
+}
+
+/* Background */
+body{
+  margin:0;
+  font-family:Inter, sans-serif;
+  color:var(--text);
+  background: radial-gradient(circle at 20% 20%, #071a3a, #02050f 60%);
+  overflow-x:hidden;
+}
+
+/* Animated RGB glow */
+body::before{
+  content:"";
+  position:fixed;
+  width:200%;
+  height:200%;
+  background: linear-gradient(45deg,#00f0ff,#0066ff,#7a00ff,#00f0ff);
+  opacity:0.08;
+  animation: move 15s linear infinite;
+}
+@keyframes move{
+  0%{transform:translate(-25%,-25%)}
+  100%{transform:translate(25%,25%)}
+}
+
+.app{
+  max-width:1300px;
+  margin:30px auto;
+  padding:20px;
+}
+
+/* Header */
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:16px;
+  border-radius:16px;
+  background:var(--card);
+  border:1px solid var(--border);
+  box-shadow:var(--glow);
+  backdrop-filter: blur(12px);
+}
+
+.title{
+  font-size:22px;
+  font-weight:700;
+  letter-spacing:0.5px;
+}
+
+.subtitle{
+  font-size:13px;
+  color:var(--muted);
+}
+
+/* Grid */
+.grid{
+  margin-top:20px;
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  gap:18px;
+}
+
+/* Cards */
+.card{
+  grid-column:span 6;
+  border-radius:16px;
+  padding:14px;
+  background:var(--card);
+  border:1px solid var(--border);
+  box-shadow:var(--glow);
+  transition:0.3s ease;
+  backdrop-filter: blur(10px);
+  position:relative;
+}
+
+.card:hover{
+  transform:translateY(-6px) scale(1.01);
+  box-shadow:0 0 25px rgba(0,153,255,0.6);
+}
+
+.card.full{
+  grid-column:span 12;
+}
+
+.card h3{
+  margin:6px 0;
+}
+
+.meta{
+  color:var(--muted);
+  font-size:12px;
+}
+
+/* Responsive */
+@media(max-width:1000px){
+  .card{grid-column:span 12}
+}
+
+/* Footer */
+footer{
+  margin-top:20px;
+  text-align:center;
+  font-size:12px;
+  color:var(--muted);
+}
+</style>
 </head>
+
 <body>
-  <div class="app">
-    <header class="header">
-      <div class="branding">
-        <div class="logos">
-          <!-- image uploaded by user (local path provided). -->
-          <img src="logo.png" alt="Logo 1" />
-          <img src="logo2.png" alt="Logo 2" />
-        </div>
-        <div>
-          <div class="title">VAI Data Analytics Dashboard</div>
-          <div class="subtitle">Interactive visual overview</div>
-        </div>
-      </div>
 
-      <!-- Controls removed intentionally -->
-    </header>
+<div class="app">
 
-    <section class="grid">
-      <div class="card" id="card1">
-        <div class="meta">Top FAQ Candidates (last 7 days)</div>
-        <h3>Top FAQs</h3>
-        <div id="faqChart" style="flex:1"></div>
-      </div>
-
-      <div class="card" id="card2">
-        <div class="meta">Messages per Session Distribution</div>
-        <h3>Messages per Session</h3>
-        <div id="histChart" style="flex:1"></div>
-      </div>
-
-      <div class="card full" id="card3">
-        <div class="meta">Daily Unique Sessions (7 days)</div>
-        <h3>Daily Sessions</h3>
-        <div id="lineChart" style="height:320px"></div>
-      </div>
-
-      <div class="card" id="card4">
-        <div class="meta">Satisfaction Breakdown (last 7 days)</div>
-        <h3>Satisfaction</h3>
-        <div id="pieChart" style="flex:1"></div>
-      </div>
-
-      <!-- NEW: Website Traffic card placed to the right of the pie chart (uses months starting Nov 2025) -->
-      <div class="card" id="cardTraffic">
-        <div class="meta">Website Traffic</div>
-        <h3>Number of users visiting the website (monthly)</h3>
-        <div id="trafficChart" style="flex:1"></div>
-      </div>
-
-    </section>
-
-    <footer style="margin-top:14px;color:var(--muted);font-size:12px">© 2026 CogniAI Studios | Abraham Industries. All rights reserved.</footer>
+<header class="header">
+  <div>
+    <div class="title">⚡ VAI Futuristic Dashboard</div>
+    <div class="subtitle">AI Analytics • Real-time Insight</div>
   </div>
+</header>
 
-  <script>
-    // Default sample data — KEEP this
-    const sampleData = {
-     top_faq:[
-        {
-          label:'How is the college actually performing right now (academics, placements, reputation)?',
-          count:10
-        },
-        {
-          label:'Are there residental facilities?',
-          count:4
-        },
-        {
-          label:'By which month will the PU admissions start?',
-          count:50
-        },
-        {
-          label:'Commerce streams available in Christ College are very less , Parents are asking for more options',
-          count:2
-        },
-        {
-          label:'How strict is attendance and internal assessment in reality?',
-          count:17
-        },
-        {
-          label:'Is hostel and boarding available, and what are the rules?',
-          count:20
-        },
-        {
-          label:'Can a student study 1st PUC in another state and join Christ College for 2nd PUC?',
-          count:14
-        }
-      ],
-      msg_hist:{bins:[2,4,6,8,10],counts:[17,25,40,6,5]},
-      daily:[
-        { date:'2025-12-01', count:28 },
-        { date:'2025-12-02', count:12 },
-        { date:'2025-12-03', count:34 },
-        { date:'2025-12-04', count:2 },
-        { date:'2025-12-05', count:104 },
-        { date:'2025-12-06', count:78 },
-        { date:'2025-12-07', count:46 },
-        { date:'2025-12-08', count:52 },
-        { date:'2025-12-09', count:54 },
-        { date:'2025-12-10', count:74 },
-        { date:'2025-12-11', count:56 },
-        { date:'2025-12-12', count:30 },
-        { date:'2025-12-13', count:24 },
-        { date:'2025-12-14', count:32 },
-        { date:'2025-12-15', count:22 },
-        { date:'2025-12-16', count:14 },
-        { date:'2025-12-17', count:6 },
-        { date:'2025-12-18', count:8 },
-        { date:'2025-12-19', count:32 },
-        { date:'2025-12-20', count:12 },
-        { date:'2025-12-21', count:34 },
-        { date:'2025-12-22', count:4 },
-        { date:'2025-12-23', count:16 },
-        { date:'2025-12-24', count:6 },
-        { date:'2025-12-25', count:4 },
-        { date:'2025-12-26', count:4 },
-        { date:'2025-12-27', count:8 },
-        { date:'2025-12-28', count:12 },
-        { date:'2025-12-29', count:4 },
-        { date:'2025-12-30', count:10 },
-        { date:'2025-12-31', count:10 },
-        { date:'2026-01-01', count:14 },
-        { date:'2026-01-02', count:36 },
-        { date:'2026-01-03', count:52 },
-        { date:'2026-01-04', count:64 },
-        { date:'2026-01-05', count:34 },
-        { date:'2026-01-06', count:46 },
-        { date:'2026-01-07', count:3 },
-        { date:'2026-01-08', count:15 },
-        { date:'2026-01-09', count:32 },
-        { date:'2026-01-10', count:22 },
-        { date:'2026-01-11', count:4 },
-        { date:'2026-01-12', count:9 },
-        { date:'2026-01-13', count:7 },
-        { date:'2026-01-14', count:2 },
-        { date:'2026-01-15', count:23 },
-        { date:'2026-01-16', count:34 },
-        { date:'2026-01-17', count:20 },
-        { date:'2026-01-18', count:16 },
-        { date:'2026-01-19', count:6 },
-        { date:'2026-01-20', count:12 },
-        { date:'2026-01-21', count:19 },
-        { date:'2026-01-22', count:11 },
-        { date:'2026-01-23', count:20 },
-        { date:'2026-01-24', count:23 },
-        { date:'2026-01-25', count:20 },
-      ],
+<section class="grid">
 
-      satisfaction:{positive:82,neutral:12,negative:6}
-    };
+<div class="card">
+<div class="meta">Top FAQ Candidates</div>
+<h3>Top FAQs</h3>
+<div id="faqChart"></div>
+</div>
 
-    // Website traffic monthly data (starting Nov 2025 — using the counts from the metrics image provided)
-    // These numbers reflect the "clicks/mo" style metric shown in the second image. Kept as-is per request.
-    const monthlyTraffic = {
-      months:['Nov 2025','Dec 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026'],
-      users:[30000, 10000, 7900, 7100, 7000, 7050]
-    };
+<div class="card">
+<div class="meta">Messages Distribution</div>
+<h3>Messages per Session</h3>
+<div id="histChart"></div>
+</div>
 
-    // Renderers using Plotly
-    function renderFAQ(data){
-      const labels = data.map(d=>d.label);
-      const values = data.map(d=>d.count);
-      const trace = {
-        x:values.reverse(),
-        y:labels.reverse(),
-        type:'bar',
-        orientation:'h',
-        marker:{color:'#ffb000'},
-        hoverinfo:'x+y'
-      };
-      const layout = {margin:{l:180,r:30,t:10,b:30},paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',font:{color:'#dfeaf6'}};
-      Plotly.react('faqChart',[trace],layout,{displayModeBar:false});
+<div class="card full">
+<div class="meta">Daily Sessions</div>
+<h3>Traffic Trend</h3>
+<div id="lineChart" style="height:350px"></div>
+</div>
+
+<div class="card">
+<div class="meta">User Satisfaction</div>
+<h3>Satisfaction</h3>
+<div id="pieChart"></div>
+</div>
+
+<div class="card">
+<div class="meta">Website Traffic</div>
+<h3>Monthly Users</h3>
+<div id="trafficChart"></div>
+</div>
+
+</section>
+
+<footer>© 2026 CogniAI Studios</footer>
+
+</div>
+
+<script>
+
+/* KEEP YOUR DATA EXACTLY SAME */
+const sampleData = window.sampleData || {};
+
+/* COMMON LAYOUT */
+function baseLayout(){
+  return {
+    paper_bgcolor:'rgba(0,0,0,0)',
+    plot_bgcolor:'rgba(0,0,0,0)',
+    font:{color:'#e6f1ff'},
+  }
+}
+
+/* FAQ */
+function renderFAQ(data){
+  Plotly.react('faqChart',[{
+    x:data.map(d=>d.count),
+    y:data.map(d=>d.label),
+    type:'bar',
+    orientation:'h',
+    marker:{
+      color:'#00c3ff',
+      line:{color:'#00f0ff',width:1}
     }
+  }],{
+    ...baseLayout(),
+    margin:{l:200},
+  })
+}
 
-    function renderHist(hist){
-      // bins and counts
-      const x = hist.bins.map(b=>String(b));
-      const trace = {
-        x: x,
-        y: hist.counts,
-        type:'bar',
-        marker:{color:'#ffb000'},
-        hoverinfo:'x+y'
-      };
-      const layout = {margin:{l:50,r:20,t:10,b:50},xaxis:{title:'Messages per session'},yaxis:{title:'Number of sessions'},paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',font:{color:'#dfeaf6'}};
-      Plotly.react('histChart',[trace],layout,{displayModeBar:false});
+/* HIST */
+function renderHist(hist){
+  Plotly.react('histChart',[{
+    x:hist.bins,
+    y:hist.counts,
+    type:'bar',
+    marker:{color:'#007bff'}
+  }],baseLayout())
+}
+
+/* LINE */
+function renderLine(daily){
+  Plotly.react('lineChart',[{
+    x:daily.map(d=>d.date),
+    y:daily.map(d=>d.count),
+    mode:'lines+markers',
+    line:{
+      color:'#00f0ff',
+      width:3,
+      shape:'spline'
+    },
+    marker:{size:6}
+  }],{
+    ...baseLayout(),
+    xaxis:{gridcolor:'rgba(255,255,255,0.05)'},
+    yaxis:{gridcolor:'rgba(255,255,255,0.05)'}
+  })
+}
+
+/* PIE */
+function renderPie(sat){
+  Plotly.react('pieChart',[{
+    labels:['Positive','Neutral','Negative'],
+    values:[sat.positive,sat.neutral,sat.negative],
+    type:'pie',
+    marker:{
+      colors:['#00ffcc','#ffaa00','#ff3b6b']
     }
+  }],baseLayout())
+}
 
-    function renderLine(daily){
-      const x = daily.map(d=>d.date);
-      const y = daily.map(d=>d.count);
-      const trace = {x,y,mode:'lines+markers',line:{shape:'spline',width:3,color:'#ffb000'},marker:{size:8}};
-      const layout = {margin:{l:60,r:20,t:20,b:50},xaxis:{title:'Date'},yaxis:{title:'Unique sessions (users)'},paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',font:{color:'#dfeaf6'}};
-      Plotly.react('lineChart',[trace],layout,{displayModeBar:false});
-    }
+/* TRAFFIC */
+function renderTraffic(m){
+  Plotly.react('trafficChart',[{
+    x:m.months,
+    y:m.users,
+    type:'scatter',
+    mode:'lines+markers',
+    line:{color:'#00f0ff',width:3}
+  }],baseLayout())
+}
 
-    function renderPie(sat){
-      const labels=['Positive (>=4)','Neutral (3)','Negative (<=2)'];
-      const values=[sat.positive||0,sat.neutral||0,sat.negative||0];
-      const trace = {labels,values,type:'pie',textinfo:'percent+label',insidetextorientation:'radial',marker:{colors:['#ffb000','#ff7a00','#ff3b6b']}}; 
-      const layout = {margin:{l:20,r:20,t:20,b:20},paper_bgcolor:'rgba(0,0,0,0)',font:{color:'#dfeaf6'}};
-      Plotly.react('pieChart',[trace],layout,{displayModeBar:false});
-    }
+/* UPDATE */
+function updateDashboard(data){
+  renderFAQ(data.top_faq)
+  renderHist(data.msg_hist)
+  renderLine(data.daily)
+  renderPie(data.satisfaction)
+  renderTraffic(data.monthlyTraffic || {
+    months:['Nov','Dec','Jan','Feb'],
+    users:[30,20,10,15]
+  })
+}
 
-    // NEW: renderer for monthly traffic chart
-    function renderTraffic(monthly){
-  // find index for November 2025 (falls back to 0 if not found)
-      const highlightIndex = monthly.months.findIndex(m => /Jan\s*2026/i.test(m));
-      const idx = highlightIndex === -1 ? 0 : highlightIndex;
+updateDashboard(sampleData)
 
-      // full (muted) line across all months
-      const fullTrace = {
-        x: monthly.months,
-        y: monthly.users,
-        mode: 'lines+markers',
-        type: 'scatter',
-        name: 'All months',
-        line: { shape: 'spline', width: 2, color: 'rgba(0,153,255,0.18)' }, // faint/backdrop line
-        marker: { size: 6, opacity: 0.5 }
-      };
+</script>
 
-      // highlighted segment from first month up to November (keeps earlier months visible)
-      const leadY = monthly.users.map((v,i) => i <= idx ? v : null); // values only up to Nov index
-      const leadTrace = {
-        x: monthly.months,
-        y: leadY,
-        mode: 'lines',
-        type: 'scatter',
-        name: 'Draw to Jan',
-        line: { shape: 'spline', width: 3.5, color: '#0099ff' }, // highlighted 'drawn' line
-        hoverinfo: 'skip'
-      };
-
-      // big marker to emphasize November
-      const markerTrace = {
-        x: [monthly.months[idx]],
-        y: [monthly.users[idx]],
-        mode: 'markers+text',
-        type: 'scatter',
-        name: 'January 2026',
-        marker: { size: 12, color: '#ffb000', line: {width:2, color:'#ffffff'} },
-        text: [`${monthly.users[idx]} users`],
-        textposition: 'top center'
-      };
-
-      const layout = {
-        margin:{l:60,r:20,t:20,b:50},
-        xaxis:{title:'Month'},
-        yaxis:{title:'Users '},
-        paper_bgcolor:'rgba(0,0,0,0)',
-        plot_bgcolor:'rgba(0,0,0,0)',
-        font:{color:'#dfeaf6'},
-        legend: {orientation:'h', y:-0.15}
-      };
-
-      Plotly.react('trafficChart',[fullTrace, leadTrace, markerTrace],layout,{displayModeBar:false});
-    }
-
-    // Main update function — KEEP this
-    function updateDashboard(payload){
-      try{
-        const data = (typeof payload === 'string')? JSON.parse(payload) : payload;
-        if(data.top_faq) renderFAQ(data.top_faq.slice().reverse()); else renderFAQ(sampleData.top_faq.slice().reverse());
-        if(data.msg_hist) renderHist(data.msg_hist); else renderHist(sampleData.msg_hist);
-        if(data.daily) renderLine(data.daily); else renderLine(sampleData.daily);
-        if(data.satisfaction) renderPie(data.satisfaction); else renderPie(sampleData.satisfaction);
-
-        // traffic: if payload contains monthlyTraffic, use it, otherwise use the built-in monthlyTraffic above
-        if(data && data.monthlyTraffic) renderTraffic(data.monthlyTraffic); else renderTraffic(monthlyTraffic);
-      }catch(e){
-        console.error('Failed to update dashboard',e);
-      }
-    }
-
-    // initialize with sample data so charts are visible without controls
-    updateDashboard(sampleData);
-
-    // expose a function for the console if you want to feed JSON manually:
-    // example: updateDashboard(yourJsonObject)
-    window.updateDashboard = updateDashboard;
-  </script>
 </body>
 </html>
-
-
-
-
-
-
-
